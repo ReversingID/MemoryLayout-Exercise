@@ -1,12 +1,17 @@
 /*
-Identifikasi tata letak memori (memory-layout) sebuah objek.
-Jika sebuah class diturunkan dari class lain, bagaimana ia dibangun?
+    Instance Order (C++)
+    Archive of Reversing.ID
+
+Objective:
+    Identifikasi urutan instansiasi objek dalam inheritance.
+
+    Jika sebuah class diturunkan dari class lain, bagaimana ia dibangun?
 
 Compile:
     (GCC)  
     $ g++ instance-order.cpp -std=c++11 -o instance-order
     
-    (LLVM) 
+    (LLVM/Clang) 
     $ clang++ instance-order.cpp -o instance-order
 
     (MSVC)
@@ -15,10 +20,12 @@ Compile:
 Run:
     $ instance-order
 */
+
 #include "../util.hpp"
 
 /*
-Amati urutan instansiasi objek.
+    Amati urutan instansiasi objek.
+
 Pertanyaan:
     - Apabila dalam suatu scope terdapat lebih dari suatu objek yang
       harus diinstansiasi, bagaimana urutan instansiasinya?
@@ -33,66 +40,73 @@ Kesimpulan:
 */
 
 //======== Type Definitions =========================================
+
 struct Base
 {
-    Base() 
+    Base () 
     {
-        printf("Hello from Base\n");
+        printf ("   Hello from Base\n");
     }
-    ~Base()
+    ~Base ()
     {
-        printf("Bye from Base\n");
+        printf ("   Bye from Base\n");
     }
 };
 
 struct Derivate : public Base 
 {
-    Derivate()
+    Derivate ()
     {
-        printf("Hello from Derivate\n");
+        printf ("   Hello from Derivate\n");
     }
-    ~Derivate()
+    ~Derivate ()
     {
-        printf("Bye from Derivate\n");
+        printf ("   Bye from Derivate\n");
     }
 };
 
 struct DerivateMore : public Derivate
 {
-    DerivateMore()
+    DerivateMore ()
     {
-        printf("Hello from DerivateMore\n");
+        printf ("   Hello from DerivateMore\n");
     }
-    ~DerivateMore()
+    ~DerivateMore ()
     {
-        printf("Bye from DerivateMore\n");
+        printf ("   Bye from DerivateMore\n");
     }
 };
 
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
-int main()
+
+int main ()
 {
+    /*
+        setiap case berada di dalam scope tertentu untuk melihat
+        proses konstruksi dan destruksi objek.
+    */
+
     // Spawn Base di dalam scope
     {
-        printf("[+] Spawning Base...\n");
+        printf ("[+] Spawning Base...\n");
         Base base;
     }
 
-    printf("\n");
+    printf ("\n");
 
     // Spawn Derivate di dalam scope
     {
-        printf("[+] Spawning Derivate...\n");
+        printf ("[+] Spawning Derivate...\n");
         Derivate derivate;
     }
     
-    printf("\n");
+    printf ("\n");
 
     // Spawn DerivateMore di dalam scope
     {
-        printf("[+] Spawning DerivateMore...\n");
+        printf ("[+] Spawning DerivateMore...\n");
         DerivateMore derivate_more;
     }
 

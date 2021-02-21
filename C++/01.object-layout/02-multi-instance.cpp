@@ -1,12 +1,16 @@
 /*
-Identifikasi tata letak memori (memory-layout) sebuah objek.
-Jika sebuah class memiliki dua atau lebih instance, dimana mereka berada?
+    Multiple Instance (C++)
+    Archive of Reversing.ID
+
+Objective:
+    Identifikasi tata letak memori (memory-layout) sebuah objek.
+    Jika sebuah class memiliki dua atau lebih instance, dimana mereka berada?
 
 Compile:
     (GCC)  
     $ g++ multi-instance.cpp -std=c++11 -o multi-instance
     
-    (LLVM) 
+    (LLVM/Clang) 
     $ clang++ multi-instance.cpp -o multi-instance
 
     (MSVC)
@@ -15,10 +19,12 @@ Compile:
 Run:
     $ multi-instance
 */
+
 #include "../util.hpp"
 
 /*
-Amati alamat setiap variabel dan fungsi
+    Amati alamat setiap variabel dan fungsi
+
 Pertanyaan:
     Variables
     - Apakah setiap instance memiliki variable dengan alamat sama?
@@ -27,53 +33,55 @@ Pertanyaan:
     - Apakah alamat fungsi dari setiap instance sama?    
 
 Kesimpulan:
-    Jika sebuah class memiliki banyak instance, setiap kelas akan memiliki instance data
-    masing-masing, namun fungsi (atau methods) yang mengoperasikannya akan tetap sama.
+    Jika sebuah class memiliki banyak instance, setiap kelas akan memiliki 
+    instance data masing-masing, namun fungsi (atau methods) yang 
+    mengoperasikannya akan tetap sama.
 */
 
 //======== Type Definitions =========================================
+
 class Example
 {
     int x;
     int y;
     int z;
 public:
-    Example() 
+    Example () 
     {
         x = 135;
         y = 182;
     }
-    void printVars()
+    void printVars ()
     {
-        printf("Location x: [%p] | Value: %d\n", &x, x);
-        printf("Location y: [%p] | Value: %d\n", &y, y);
-        printf("Location z: [%p] | Value: %d\n", &z, z);
+        printf ("Location x: [%p] | Value: %d\n", &x, x);
+        printf ("Location y: [%p] | Value: %d\n", &y, y);
+        printf ("Location z: [%p] | Value: %d\n", &z, z);
     }
-    void printFuncs()
+    void printFuncs ()
     {
-        printf("Location of printVars   : [%p]\n", &Example::printVars);
-        printf("Location of printFuncs  : [%p]\n", &Example::printFuncs);
+        printf ("Location of printVars   : [%p]\n", &Example::printVars);
+        printf ("Location of printFuncs  : [%p]\n", &Example::printFuncs);
     }
 };
 
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
-int main()
+
+int main ()
 {
     Example obj1;
     Example obj2;
 
-    dump_instance("Instance of obj1", obj1);
-    obj1.printVars();
-    obj1.printFuncs();
+    dump_instance ("Instance of obj1", obj1);
+    obj1.printVars ();
+    obj1.printFuncs ();
 
-    printf("\n");
+    printf ("\n");
     
-    dump_instance("Instance of obj2", obj2);
-    obj2.printVars();
-    obj2.printFuncs();
-
+    dump_instance ("Instance of obj2", obj2);
+    obj2.printVars ();
+    obj2.printFuncs ();
 
     return 0;
 }

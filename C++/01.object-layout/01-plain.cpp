@@ -1,15 +1,19 @@
 /*
-Identifikasi tata letak memori (memory-layout) sebuah objek.
-Representasi dari sebuah class dengan tiga private-variable dan dua fungsi.
+    Plain Class (C++)
+    Archive of Reversing.ID
 
-Plain object, objek tanpa adanya dekorasi serta merupakan objek tunggal tanpa
-adanya relasi turunan (inheritance).
+Objective:
+    Identifikasi tata letak memori (memory-layout) sebuah objek.
+    Representasi dari sebuah class dengan tiga private-variable dan dua fungsi.
+
+    Objek merupakan objek tanpa dekorasi dan polimorfisme, serta tidak memiliki
+    relasi turunan (inheritance).
 
 Compile:
     (GCC)  
     $ g++ plain.cpp -std=c++11 -o plain
     
-    (LLVM) 
+    (LLVM/Clang) 
     $ clang++ plain.cpp -o plain
 
     (MSVC)
@@ -18,62 +22,71 @@ Compile:
 Run:
     $ plain
 */
+
 #include "../util.hpp"
 
 /*
-Amati alamat setiap variabel dan fungsi.
+    Amati alamat setiap variabel dan fungsi.
+
 Pertanyaan:
     Variables
-    - Apakah alamat dari setiap variabel saling berdekatan? Lihat pula ukurannya.
-    - Apakah alamat mereka membentuk sebuah urutan? Bagaimana urutannya?
-    - Apakah letak mereka dekat dengan lokasi awal objek di memory?
+    Identifikasi variabel dan dapatkan alamatnya.
+    - Apakah alamat dari setiap variabel saling berdekatan? 
+    - Berapa ukuran setiap variabel?
+    - Bandingkan urutan variabel di class serta di memory.
+      Bagaimana urutannya?
+    - Apakah letak variabel dekat dengan lokasi awal objek di memory?
     - Di segment apa variabel berada?
     
     Functions
-    - Apakah alamat dari seetiap fungsi saling berdekatan? Mengapa?
-    - Apakah alamat mereka membentuk sebuah urutan? Bagaimana urutannya?
+    Identifikasi fungsi dan dapatkan alamatnya.
+    - Apakah alamat dari setiap fungsi saling berdekatan?
+    - Bandingkan urutan fungsi di class serta di memory.
+      Bagaimana urutannya?
     - Apakah letak mereka dekat dengan lokasi awal objek di memory?
     - Apakah letak mereka dekat dengan variable?
     - Di segment apa fungsi-fungsi berada?
 */
 
 //======== Type Definitions =========================================
+
 class Example
 {
     int x;
     int y;
     int z;
 public:
-    Example() 
+    Example () 
     {
         x = 135;
         y = 182;
     }
-    void printVars()
+    void printVars ()
     {
-        printf("Location x: [%p] | Value: %d\n", &x, x);
-        printf("Location y: [%p] | Value: %d\n", &y, y);
-        printf("Location z: [%p] | Value: %d\n", &z, z);
+        printf ("Location x: [%p] | Value: %d\n", &x, x);
+        printf ("Location y: [%p] | Value: %d\n", &y, y);
+        printf ("Location z: [%p] | Value: %d\n", &z, z);
     }
-    void printFuncs()
+    void printFuncs ()
     {
-        printf("Location of printVars   : [%p]\n", &Example::printVars);
-        printf("Location of printFuncs  : [%p]\n", &Example::printFuncs);
+        printf ("Location of printVars   : [%p]\n", &Example::printVars);
+        printf ("Location of printFuncs  : [%p]\n", &Example::printFuncs);
     }
 };
 
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
-int main()
+
+int main ()
 {
     Example kelas;
 
-    dump_instance("Plain Object without any decoration", kelas);
-    kelas.printVars();
+    dump_instance ("Plain Object without any decoration", kelas);
+    kelas.printVars ();
 
-    printf("\n");
-    kelas.printFuncs();
+    printf ("\n");
+    kelas.printFuncs ();
 
     return 0;
 }

@@ -1,37 +1,57 @@
 /*
-Virtual Table atau Virtual Method Table
+    Override Function (C++)
+    Archive of Reversing.ID
 
-Di dalam dunia OO (object-oriented), polimorfisme menyebabkan class
-turunan dapat melakukan override terhadap perilaku fungsi-fungsi yang
-diwariskan dari Base.
+Objective:
+    Identifikasi letak vtable beserta isinya.
 
-C++ menggunakan konsep virtual table untuk mengimplementasikan hal ini.
+    Virtual Table disebut juga sebagai Virtual Method Table.
 
-Apa yang terjadi di vtable jika sebuah method di-override?
+    Dalam Object Oriented Programming, setiap kelas yang diturunkan dari
+    kelas lain akan mewarisi method-method yang terdefinisi di kelas induk.
+    Kelas turunan dapat pula mengubah perilaku dari method yang diwarisi.
+    Dikenal juga dengan sebutan override.
+    
+    C++ mengimplementasikan Virtual Table untuk mendukung overriding.
+
+    Apa yang terjadi di vtable jika sebuah method di-override?
 
 teruji di:
     - TDM GCC 5.1.0 dan MinGW GCC 7.3.0 (x64)
+    - LLVM/Clang 12.0
 
 Compile:
+    (GCC)
     $ g++ override.cpp -std=c++11 -o override
+
+    (LLVM/Clang)
+    $ clang++ override.cpp -o override
+
+    (MSVC)
+    $ cl override.cpp
 
 Run:
     $ override
 
-Untuk mempermudah analisis, kita dapat memaksa compiler untuk mengeluarkan
-representasi vtable dan struktur lainnya yang digunakan.
+Dump vtable:
+    Dump representasi vtable dan struktur lain untuk keperluan analisis.
+
     (GCC)
     $ g++ -g -fdump-class-hierarchy -std=c++11 override.cpp
+
+    (LLVM/Clang)
+    $ clang++ -fdump-record-layouts override.cpp
 
     (MSVC)
     $ cl.exe /d1 reportAllClassLayout override.cpp
 
 */
-#include <iostream>
+
 #include "../util.hpp"
 
 /*
-Amati alamat dari setiap komponen.
+    Amati alamat dari setiap komponen.
+
 Pertanyaan:
     - Apakah terdapat dua atau lebih entry di vtable yang menunjuk alamat sama?
       Mengapa demikian?
@@ -42,6 +62,7 @@ Kesimpulan:
 */
 
 //======== Type Definitions =========================================
+
 /*
 Memory layout:
     - Base::vtable      (pointer ke vtable Base)
@@ -61,9 +82,9 @@ public:
     Base(int id) : id(id)   { }
     virtual ~Base()         { }
 
-    void A()                { std::cout << "-  Base[" << id << "]::A" << std::endl; }
-    virtual void B()        { std::cout << "-  Base[" << id << "]::B" << std::endl; }
-    virtual void C()        { std::cout << "-  Base[" << id << "]::C" << std::endl; }
+    void A()                { printf ("-  Base[%d]::A\n", id); }
+    virtual void B()        { printf ("-  Base[%d]::B\n", id); }
+    virtual void C()        { printf ("-  Base[%d]::C\n", id); }
 };
 
 
@@ -84,22 +105,23 @@ public:
     Derivate(int id) : Base(id)  { }
     ~Derivate()                  { }
 
-    // void B() override           { std::cout << "-  Derivate[" << id << "]::B" << std::endl; } 
-    void C() override           { std::cout << "-  Derivate[" << id << "]::C" << std::endl; }
+    // void B() override           { printf ("-  Derivate[%d]::B\n", id); } 
+    void C() override           { printf ("-  Derivate[%d]::C\n", id); }
 };
 
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
+
 int main()
 {
     Base base(1);
     Derivate derivate(2);
     Base *pbase = new Derivate(3);
 
-    dump_instance("instance of base", base, 4);    
-    dump_instance("instance of Derivate", derivate, 4);    
-    dump_instance("instance of pointer to Derivate", *pbase, 4);
+    dump_instance("instance of base", base, true);    
+    dump_instance("instance of Derivate", derivate, true);    
+    dump_instance("instance of pointer to Derivate", *pbase, true);
 
     // Cobalah untuk memanggil B() dari setiap instance!
 

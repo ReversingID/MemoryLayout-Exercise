@@ -1,22 +1,26 @@
 /*
-Identifikasi tata letak memori (memory-layout) sebuah objek.
+    Type Cast (C++)
+    Archive of Reversing.ID
 
-Di dalam dunia OO (object-oriented), sebuah class dapat memiliki hubungan parent-child
-dengan class lain. Sebuah class dapat memiliki lebih dari satu base dan dapat pula
-memiliki lebih dari satu turunan. Hubungan antar class ini dapat diperlihatkan
-sebagai hirarki.
+Objective:
+    Identifikasi tata letak memori (memory-layout) sebuah objek.
 
-Upcasting adalah mengubah reference atau pointer bertipe derived sehingga dianggap
-bertipe base.
+    Dalam dunia Object Oriented, sebuah class dapat memiliki hubungan 
+    parent-child dengan class lain. Sebuah class dapat memiliki lebih
+    dari satu parent dan diturunkan ke lebih dari satu child.
+    Hubungan antar class ini dapat diperlihatkan sebagai hirarki.
 
-Downcasting adalah kebalikannya, mengubah reference atau pointer bertipe base 
-sehingga dianggap bertipe derived.
+    Upcasting adalah mengubah reference atau pointer bertipe child/derived
+    sehingga dianggap bertipe parent/base.
+    
+    Downcasting adalah kebalikannya, mengubah reference atau pointer bertipe
+    parent/base sehingga dianggap bertipe derived/child.
 
 Compile:
     (GCC)  
     $ g++ cast.cpp -std=c++11 -o cast
     
-    (LLVM) 
+    (LLVM/Clang) 
     $ clang++ cast.cpp -o cast
 
     (MSVC)
@@ -25,38 +29,48 @@ Compile:
 Run:
     $ cast
 */
+
 #include "../util.hpp"
 
 /*
+    Amati alamat dari masing-masing elemen berikut.
+
+Pertanyaan:
+    Objek
+    - Ketika upcast derivate ke base1 atau base2, alamat mana yang ditunjuk?
+    - Kenapa alamat Derivate sama dengan ketika Derivate upcast ke Base1?
+    - Apa yang terjadi ketika pointer base menunjuk ke objek base namun 
+      mengalami downcast sehingga menunjuk tipe derivate?
+    - Saat Base1 downcast ke Derivate, variabel-variabel menunjuk kemana?
+    - Saat Base2 downcast ke Derivate, objek menunjuk kemana?
+    - ganti C-style cast dengan dynamic_cast<> saat downcast, 
+      apa yang terjadi?
+    
+    Functions
+    - Untuk setiap casting yang terjadi, function() manakah yang dipanggil?
+
+
 dynamic_cast<>
     digunakan untuk upcast maupun downcast.
     tujuan utama penggunaannya adalah untuk menjamin hasil konversi
     merupakan objek utuhdan valid dengan tipe yang ditargetkan.
-
-Amati alamat dari masing-masing elemen berikut.
-Pertanyaan:
-    - Apa yang terjadi jika Sebuah pointer base menunjuk ke objek base, 
-      namun mengalami downcast sehingga menunjuk tipe turunan?
-    - ganti C-style cast dengan dynamic_cast<> pada saat downcast, apa 
-      yang terjadi?
 */
 
 //======== Type Definitions =========================================
+
 struct Base1
 {
     uint32_t x, y;
 
-    Base1() 
+    Base1 () 
     {
         x = 0x87;
         y = 0xB6;
     }
 
-    void function(uint32_t a)
+    void function ()
     {
-        x = a;
-        y = a + 45;
-        printf("[%p] Hello Base1! %x %x\n", &Base1::function, x, y);
+        printf ("[%p] Hello Base1! x:%x y:%x\n", &Base1::function, x, y);
     }
 };
 
@@ -64,15 +78,14 @@ struct Base2
 {
     uint32_t z;
 
-    Base2()
+    Base2 ()
     {
         z = 0xEA;
     }
     
-    void function(uint32_t a)
+    void function ()
     {
-        z = a;
-        printf("[%p] Hello Base2! %x\n", &Base2::function, z);
+        printf ("[%p] Hello Base2! z:%x\n", &Base2::function, z);
     }
 };
 
@@ -82,22 +95,23 @@ struct Derivate : public Base1, public Base2
 {
     uint32_t w;
 
-    Derivate()
+    Derivate ()
     {
         w = 0;
     }
 
-    void function(uint32_t a)
+    void function ()
     {
-        w = a;
-        printf("[%p] Hello Derivate! %x %x %x %x\n", &Derivate::function, x, y, z, w);
+        printf ("[%p] Hello Derivate! x:%x y:%x z:%x w:%x\n", 
+            &Derivate::function, x, y, z, w);
     }
 };
 
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
-int main()
+
+int main ()
 {
     Base1    base1;
     Base2    base2;
@@ -107,36 +121,38 @@ int main()
     Base2* pbase2;
     Derivate* pderivate;
 
-    printf("[-] base1 is at    %p (size %d)\n", &base1, sizeof(base1));
-    printf("[-] derivate is at %p (size %d)\n", &derivate, sizeof(derivate));
-    derivate.function(0xFF);
-    base1.function(0x87);
+    printf ("[+] base1 is at    [%p] (size %zu)\n", &base1, sizeof (base1));
+    printf ("[+] base2 is at    [%p] (size %zu)\n", &base2, sizeof(base2));
+    printf ("[+] derivate is at [%p] (size %zu)\n", &derivate, sizeof (derivate));
+    derivate.function ();
+    base1.function ();
+    base2.function ();
 
-    printf("\n============================\n\n");
+    printf ("\n============================\n\n");
 
-    printf("[+] Upcast derivate to parent\n");
-    printf("[-] to Base1...\n");
-    pbase1 = dynamic_cast<Base1*>(&derivate);
-    printf("[-] I'm located at: %p\n", pbase1);
-    pbase1->function(1);
-    printf("\n");
-    printf("[-] to Base2...\n");
-    pbase2 = dynamic_cast<Base2*>(&derivate);
-    printf("[-] I'm located at: %p\n", pbase2);
-    pbase2->function(2);
+    printf ("[+] Upcast derivate to parent\n");
+    printf ("   [-] to Base1...\n");
+    pbase1 = dynamic_cast<Base1*> (&derivate);
+    printf ("   [-] I'm located at: [%p]\n", pbase1);
+    pbase1->function ();
+    printf ("\n");
+    printf ("   [-] to Base2...\n");
+    pbase2 = dynamic_cast<Base2*> (&derivate);
+    printf ("   [-] I'm located at: [%p]\n", pbase2);
+    pbase2->function ();
 
-    printf("\n============================\n\n");
+    printf ("\n============================\n\n");
     
-    printf("[+] Downcast base to child\n");
-    printf("[-] from Base1...\n");
+    printf ("[+] Downcast base to child\n");
+    printf ("   [-] from Base1...\n");
     pderivate = (Derivate*)&base1;
-    printf("[-] I'm located at: %p\n", pderivate);
-    pderivate->function(3);
-    printf("\n");
-    printf("[-] from Base2...\n");
+    printf ("   [-] I'm located at: [%p]\n", pderivate);
+    pderivate->function ();
+    printf ("\n");
+    printf ("   [-] from Base2...\n");
     pderivate = (Derivate*)&base2;
-    printf("[-] I'm located at: %p\n", pderivate);
-    pderivate->function(3);
+    printf ("   [-] I'm located at: [%p]\n", pderivate);
+    pderivate->function ();
 
     return 0;
 }

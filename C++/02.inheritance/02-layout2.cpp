@@ -1,12 +1,17 @@
 /*
-Identifikasi tata letak memori (memory-layout) sebuah objek.
-Jika sebuah class diturunkan dari class lain, bagaimana ia dibangun?
+    Inheritance Layout (C++)
+    Archive of Reversing.ID
+
+Objective:
+    Identifikasi tata letak memori (memory-layout) sebuah objek.
+
+    Jika sebuah class diturunkan dari class lain, bagaimana ia dibangun?
 
 Compile:
     (GCC)  
     $ g++ layout2.cpp -std=c++11 -o layout2
     
-    (LLVM) 
+    (LLVM/Clang) 
     $ clang++ layout2.cpp -o layout2
 
     (MSVC)
@@ -15,12 +20,18 @@ Compile:
 Run:
     $ layout2
 */
+
 #include "../util.hpp"
 
 /*
-Amati masing-masing alamat yang ditampilkan.
+    Amati masing-masing alamat yang ditampilkan.
+
 Pertanyaan:
-    - Apabila suatu class memiliki beberapa class lain sebagai anggota,
+    Object
+    - Berapa ukuran setiap class?
+
+    Variables
+    - Apabila suatu class diturunkan dari beberapa class lain,
       bagaimana layout dari setiap objek di memory?
 
 Kesimpulan:
@@ -30,6 +41,7 @@ Kesimpulan:
 */
 
 //======== Type Definitions =========================================
+
 struct Base1
 {
     uint32_t x, y;
@@ -57,6 +69,8 @@ class akan memiliki data dengan urutan:
     - warisan dari Base1
     - warisan dari Base2
     - data class Derivate
+
+Size: 16 = 8 + 4 kemudian dibulatkan menjadi kelipatan 8
 */
 struct Derivate : public Base1, public Base2 
 {
@@ -74,14 +88,15 @@ struct Derivate : public Base1, public Base2
 //======== Helper Functions =========================================
 
 //======== Main Function ============================================
+
 int main()
 {
     printf("[+] Spawn derivate...\n");
     Derivate derivate;
     
-    printf("Size of derivate: %d\n", sizeof(Derivate));
-    printf("Size of Base1: %d\n", sizeof(Base1));
-    printf("Size of Base2: %d\n", sizeof(Base2));
+    printf("Size of derivate: %zu\n", sizeof(Derivate));
+    printf("Size of Base1: %zu\n", sizeof(Base1));
+    printf("Size of Base2: %zu\n", sizeof(Base2));
     derivate.printVars();
 
     return 0;
