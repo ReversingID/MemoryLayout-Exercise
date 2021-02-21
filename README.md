@@ -4,9 +4,13 @@ Open repository for structure and layout of object in memory for reverse enginee
 
 ### Selayang Pandang
 
-Repository ini digunakan untuk menghimpun informasi dan pengetahuan tentang representasi objek di memory dan mekanisme yang berhubungan dengannya. Beberapa contoh binary disertakan di dalam repository sebagai latihan untuk memperdalam konsep. 
+Repository ini digunakan untuk menghimpun informasi dan pengetahuan tentang representasi objek di memory dan mekanisme yang berhubungan dengannya. Beberapa contoh binary disertakan di dalam repository sebagai latihan untuk memperdalam konsep.
 
 Repository ini merupakan repository bebas dan terbuka. Siapapun, baik internal maupun eksternal komunitas Reversing.ID, dapat mengakses dan memanfaatkan konten ini.
+
+### Representasi Objek
+
+Setiap objek yang diinstansiasi akan menempati ruang memory. Besarnya ruang memory yang dialokasikan bergantung kepada banyaknya variabel (field) yang dideklarasikan serta metadata dari class. Beberapa bahasa dan compiler mungkin merepresentasikan objek dengan cara berbeda atau memiliki karakteristik tertentu.
 
 ### Struktur dan Konten 
 
@@ -19,6 +23,14 @@ Di setiap direktori akan terdapat beberapa direktori yang akan melakukan pembaha
 * instantiation order
 * vtable (virtual table) atau vmt (virtual method table)
 * Run-Time Type Identifier
+
+### Exercise
+
+Setiap sample merupakan sebuah exercise dengan objektif tertentu. Masing-masing sample akan memiliki instruksi untuk melakukan kompilasi dan beberapa pertanyaan yang harus dijawab saat melakukan analisis. Gunakan source code sebagai perbandingan untuk mengidentifikasi field yang sesuai.
+
+Setiap sample akan melakukan dump raw binary saat runtime. Dump dilakukan terhadap objek dan struktur terkait class di memory. Objektif dari setiap exercise adalah mengenali layout memory dari setiap objek melalui analisis dump.
+
+Analisis dapat pula dilakukan dengan melakukan debugging.
 
 ### Bagaimana Cara Berkontribusi?
 
